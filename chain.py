@@ -13,7 +13,7 @@ class Chain:
     def __len__(self):
         return len(self._blocks)
 
-    def get_new(self):
+    def get_new(self) -> [Block]:
         return self._blocks[-self._num_new:]
 
     def add_block(self, block: Block):
@@ -24,10 +24,14 @@ class Chain:
         print('initializing chain')
         self.add_block(Block.first())
 
-    def verify(self) -> bool:
-        for curr_block, next_block in iterate_pairwise(self._blocks):
+    def verify(self, whole_chain: bool=True) -> bool:
+        for curr_block, next_block in iterate_pairwise(self._blocks if whole_chain else self.get_new()):
+            if not curr_block.valid_hash():
+                print('invalid block', curr_block)
+                return False
+
             if curr_block.get_hash() != next_block.prev_hash:
-                print('invalid block', next_block.index)
+                print('invalid block', next_block)
                 return False
 
         return True
@@ -38,7 +42,7 @@ class Chain:
             prev_block = self._blocks[block_idx - 1]
 
             if curr_block.prev_hash != prev_block.get_hash():
-                print('invalid block', curr_block.index)
+                print('invalid block', curr_block)
                 return False
 
         return True

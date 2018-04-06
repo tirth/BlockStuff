@@ -15,7 +15,7 @@ class Block:
 
     @classmethod
     def first(cls) -> 'Block':
-        return cls(0, datetime.utcnow().timestamp(), 'first block', None).mine()
+        return cls(0, datetime.utcnow().timestamp(), 'hello chain', None).mine()
 
     @classmethod
     def next(cls, last_block: 'Block', data) -> 'Block':
@@ -33,8 +33,11 @@ class Block:
         sha.update(self.get_header().encode())
         return sha.hexdigest()
 
+    def valid_hash(self) -> bool:
+        return self.get_hash().startswith('420')
+
     def mine(self) -> 'Block':
-        while not self.get_hash().startswith('4200'):
+        while not self.valid_hash():
             self.nonce += 1
 
         return self
